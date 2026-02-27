@@ -1,0 +1,147 @@
+{
+  "Negocios y tecnologias": [
+    {
+      "carrera": "licenciatura en Administración",
+      "descripcion_general": "Profesionista visionario que aplica competencias integrales en la optimización de los recursos organizacionales, con fundamento en las ciencias administrativas y bajo un enfoque de responsabilidad social.",
+      "campo_laboral": {
+        "alcance_geografico": [
+          "local",
+          "regional",
+          "estatal",
+          "nacional",
+          "internacional"
+        ],
+        "entidades": "Entidades de cualquier tamaño y sector económico, del ámbito público, privado o social."
+      },
+      "valores_y_compromisos": [
+        "compromiso",
+        "equidad",
+        "ética",
+        "honestidad",
+        "humanismo",
+        "igualdad",
+        "integridad",
+        "lealtad",
+        "respeto",
+        "responsabilidad",
+        "solidaridad",
+        "tolerancia"
+      ],
+      "competencias_clave": {
+        "liderazgo": "Responde a las problemáticas de su entorno a través de soluciones innovadoras.",
+        "gestion": "Coordina los recursos de la organización para el logro de objetivos sociales y económicos, en beneficio de los grupos de interés."
+      }
+    },
+    {
+      "carrera": "licenciatura en Gestión y Dirección de Negocios",
+      "descripcion_general": "Profesionista con conocimientos, habilidades y actitudes para crear y desarrollar organizaciones productivas, competitivas y rentables en un entorno empresarial global, dinámico, complejo y multicultural.",
+      "campo_laboral": {
+        "alcance_geografico": [
+          "regional",
+          "nacional",
+          "global"
+        ],
+        "entidades": "Organizaciones sociales y empresariales que requieran servicios de gestoría, consultoría de calidad y procesos directivos de alto desempeño."
+      },
+      "valores_y_compromisos": [
+        "ética",
+        "responsabilidad social",
+        "multiculturalidad",
+        "formación directiva"
+      ],
+      "competencias_clave": {
+        "emprendimiento": "Capacidad para gestionar el desarrollo de la innovación haciendo uso de modelos de negocio actuales.",
+        "liderazgo": "Visualizar y desarrollar oportunidades de negocios, tomar decisiones y ejercer el liderazgo dentro de equipos de trabajo.",
+        "gestion_recursos": "Administración de recursos económicos, materiales, técnicos, tecnológicos y humanos.",
+        "consultoria": "Brindar servicios de gestión y consultoría corporativa bajo estándares de calidad."
+      }
+    },
+    {
+      "carrera": "licenciatura en Ingeniería de Software",
+      "descripcion_general": "Egresado capaz de desarrollar soluciones de software de calidad empleando un enfoque sistemático, disciplinado y cuantificable, aplicando teorías y modelos para el ciclo de vida del software.",
+      "campo_laboral": {
+        "alcance_geografico": [
+          "nacional"
+        ],
+        "entidades": "Sector de desarrollo de software, organizaciones que requieran soluciones tecnológicas y equipos multidisciplinarios de ingeniería."
+      },
+      "valores_y_compromisos": [
+        "ética",
+        "legalidad",
+        "responsabilidad económica",
+        "desarrollo profesional continuo",
+        "disciplina"
+      ],
+      "competencias_clave": {
+        "ciclo_de_vida": "Identificación, análisis, diseño, construcción, implementación, verificación y documentación de soluciones de software.",
+        "colaboracion": "Desempeño profesional de manera individual o en equipos multidisciplinarios con buena comunicación.",
+        "innovacion": "Actuar como agente de cambio en el terreno del desarrollo de software del país.",
+        "aprendizaje": "Capacidad de aprender y aplicar nuevos modelos, técnicas y herramientas propios de la disciplina."
+      }
+    }
+  ],
+
+  "Ingenieria":[
+{
+  "carrera": "Licenciatura en Ingeniería Civil",
+  "descripcion_general": "Egresado con conocimientos y habilidades para intervenir en la planificación, diseño, resolución de problemas y control de procesos de Ingeniería Civil, atendiendo necesidades sociales mediante la aplicación de principios científicos y normas de construcción.",
+  "campo_laboral": {
+    "alcance_geografico": [
+      "regional",
+      "nacional",
+      "internacional"
+    ],
+    "entidades": "Ámbitos de desarrollo de infraestructura, educación y proyección de la sociedad, atendiendo contextos ambientales, técnicos, sociales, económicos y legales."
+  },
+  "valores_y_compromisos": [
+    "responsabilidad",
+    "honestidad",
+    "ética profesional",
+    "trabajo en equipo",
+    "versatilidad",
+    "creatividad",
+    "liderazgo",
+    "responsabilidad social"
+  ],
+  "competencias_clave": {
+    "administracion": "Administra proyectos y obras aplicando planeación, organización, dirección y control para una gestión eficiente.",
+    "diagnostico": "Diagnosticar problemas de sistemas y obras civiles derivados de necesidades sociales aplicando ciencias básicas y de ingeniería.",
+    "diseno": "Diseñar sistemas y obras civiles con propuestas integrales basadas en normativa y análisis costo-beneficio.",
+    "investigacion": "Investigar problemas desde perspectivas sociales, técnicas y económicas aplicando metodologías científicas.",
+    "comunicacion": "Comunicar ideas oralmente y por escrito mediante estrategias lingüísticas y uso de tecnologías de la información."
+  }
+},
+
+
+
+{
+  "carrera": "Licenciatura en Ingeniería Industrial",
+  "descripcion_general": "Profesional competente para diseñar, optimizar y mantener procesos de manufactura y servicios, integrando tecnologías de la información y técnicas de ingeniería para garantizar productividad, calidad y sostenibilidad.",
+  "campo_laboral": {
+    "alcance_geografico": [
+      "nacional",
+      "internacional"
+    ],
+    "entidades": "Organizaciones de manufactura, comerciales y de servicios, así como gestión de nuevos proyectos de negocios."
+  },
+  "valores_y_compromisos": [
+    "ética",
+    "responsabilidad",
+    "honestidad",
+    "tolerancia",
+    "sostenibilidad",
+    "seguridad y salud laboral",
+    "calidad",
+    "solidaridad"
+  ],
+  "competencias_clave": {
+    "gestion_procesos": "Diseñar, implementar y optimizar procesos de manufactura, comerciales y de servicios.",
+    "integracion_tecnologica": "Integrar técnicas de ingeniería y TIC para asegurar productividad y cumplimiento normativo.",
+    "liderazgo_equipos": "Formar equipos inter y multidisciplinarios para el desarrollo de planes estratégicos.",
+    "evaluacion_proyectos": "Generar y evaluar la factibilidad y rentabilidad de nuevos proyectos de negocios.",
+    "innovacion_continua": "Desarrollar soluciones innovadoras adaptándose a cambios globales mediante el autoaprendizaje."
+  }
+}
+
+  ]
+}
