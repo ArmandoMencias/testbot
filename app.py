@@ -1,18 +1,98 @@
 import streamlit as st
 import os
 import json
+import csv # <-- Nueva importación
 from dotenv import load_dotenv
 from groq import Groq
 
-# 1. Cargar variables de entorno e inicializar Groq
 load_dotenv()
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-# 2. Configurar la página de Streamlit
-st.set_page_config(page_title="Agente Vocacional", layout="centered")
-st.title("Agente de Orientación Vocacional")
+# --- FUNCIONES DE PERSISTENCIA ---
+def guardar_resultado(id_usuario, resultados):
+    archivo_resultados = "resultados_test.json"
+    data = {}
+    
+    if os.path.exists(archivo_resultados):
+        try:
+            with open(archivo_resultados, "r", encoding='utf-8') as f:
+                data = json.load(f)
+        except json.JSONDecodeError:
+            data = {}
+            
+    data[id_usuario] = resultados
+    
+    with open(archivo_resultados, "w", encoding='utf-8') as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+        
+    return "Resultados guardados correctamente."
 
-# 3. Función para cargar el JSON
+def usuario_es_valido(id_ingresado):
+    try:
+        with open('usuario.csv', mode='r', encoding='utf-8') as f:
+            lector = csv.DictReader(f)
+            for fila in lector:
+                # 'usuario' es el nombre de la cabecera en tu CSV
+                if fila['usuario'] == id_ingresado:
+                    return True
+        return False
+    except FileNotFoundError:
+        st.error("Error interno: Archivo de usuarios no encontrado.")
+        return False
+
+# --- CONFIGURACIÓN UI ---
+st.set_page_config(page_title="Agente Vocacional", layout="centered")
+
+# Inicializar variables de estado
+if "autenticado" not in st.session_state:
+    st.session_state.autenticado = False
+if "test_completado" not in st.session_state:
+    st.session_state.test_completado = False
+if "resultados_finales" not in st.session_state:
+    st.session_state.resultados_finales = {}
+
+# ESTADO 1: Pantalla de Acceso
+if not st.session_state.autenticado:
+    st.title("Acceso al Sistema")
+    user_id = st.text_input("Ingresa tu número de usuario (ID):")
+    
+    if st.button("Comenzar Test"):
+        if user_id:
+            if usuario_es_valido(user_id):
+                st.session_state.user_id = user_id
+                st.session_state.autenticado = True
+                st.rerun()
+            else:
+                st.error("Acceso denegado. Número de usuario no registrado.")
+        else:
+            st.error("Por favor ingresa un ID válido.")
+    st.stop()
+
+# ESTADO 3: Pantalla de Resultados (Se evalúa antes del chat)
+if st.session_state.test_completado:
+    st.title("Test Vocacional Finalizado")
+    st.success("Tus resultados han sido procesados y guardados de forma segura.")
+    st.subheader(f"Resultados para el Usuario: {st.session_state.user_id}")
+    
+    # Mostrar los resultados de forma elegante usando métricas de Streamlit
+    col1, col2, col3 = st.columns(3)
+    columnas = [col1, col2, col3]
+    
+    for i, (carrera, porcentaje) in enumerate(st.session_state.resultados_finales.items()):
+        if i < 3: # Asegurar que solo usemos las 3 columnas
+            columnas[i].metric(label=carrera, value=porcentaje)
+    
+    st.write("---")
+    # Un botón para limpiar la sesión y volver al inicio. Muy útil para pruebas.
+    if st.button("Inicio"):
+        st.session_state.clear()
+        st.rerun()
+        
+    st.stop() # Detenemos la ejecución aquí para que no dibuje el chat
+
+# ESTADO 2: Pantalla del Chat (Lógica del Agente)
+st.title(f"Evaluación en curso - Usuario: {st.session_state.user_id}")
+
 @st.cache_data
 def cargar_datos():
     with open('PerfilEgreso.json', 'r', encoding='utf-8') as archivo:
@@ -20,52 +100,68 @@ def cargar_datos():
 
 carreras_db = cargar_datos()
 
-# 4. Definir el System Prompt
 system_prompt = f"""
-Eres un agente de orientación vocacional astuto y directo. Tu objetivo es perfilar al usuario.
+Eres un agente de orientación vocacional imparcial, astuto y directo. Tu objetivo es perfilar al usuario mediante una entrevista.
 
-Reglas estrictas:
-1. Haz preguntas al usuario UNA POR UNA para conocer sus gustos, materias favoritas y habilidades. No lances un interrogatorio policial.
-2. Mantén la conversación fluida y natural.
-3. Tienes la siguiente base de datos de carreras agrupadas por facultad en formato JSON: {json.dumps(carreras_db)}
-4. Analiza en silencio las respuestas cruzándolas con los campos "valores_y_compromisos" y "competencias_clave".
-5. REGLA DE FUERA DE RANGO: Si las respuestas del usuario apuntan indudablemente a una disciplina que NO existe en el JSON (por ejemplo, Medicina, Arquitectura, Artes), debes decírselo de frente con un mensaje similar a: "Tu perfil tiene una fuerte inclinación hacia [Nombre de la Carrera], pero lamentablemente no está disponible en las facultades que tengo registradas."
-6. Tras aplicar la regla 5, intenta ofrecerle la opción u opciones del JSON que compartan más habilidades transversales con su perfil, explicando la relación. Si de plano no hay relación, díselo.
-7. Cuando tengas suficiente información (al menos 3 o 4 respuestas sólidas), DEJA DE PREGUNTAR.
-8. Si el perfil sí encaja con el JSON desde el principio, devuelve un Top 3 de carreras recomendadas, indicando Facultad, profesión, porcentaje de afinidad y el porqué del match.
+REGLAS ESTRICTAS DE OPSEC Y COMPORTAMIENTO:
+1. CONFIDENCIALIDAD TOTAL: Jamás menciones que tienes una base de datos, un JSON o una lista predefinida de opciones. Para el usuario, tu conocimiento es natural e ilimitado.
+2. NEUTRALIDAD ABSOLUTA: Durante la fase de preguntas, NO sugieras, no des pistas, ni menciones el nombre de ninguna carrera. Tu único trabajo ahora es extraer información pura (gustos, materias, formas de trabajar) sin influir en sus respuestas.
+3. Haz preguntas UNA POR UNA. Mantén la conversación fluida y natural, no como un interrogatorio policial.
+4. Analiza la información en silencio. Cruza sus respuestas con los perfiles que tienes asignados sin decírselo al usuario.
+5. Cuando tengas suficiente información (al menos 3 o 4 respuestas con sustancia), DEJA DE PREGUNTAR.
+6. si la carrera a la que se esta declinando el usuario es diferente a las que tienes en el json le puedes dicir a que carrera pertenece pero que no esta en la universidad
+7. Al final, da una breve explicación de tu análisis y luego debes decir EXACTAMENTE la palabra "FINALIZADO" seguida de un objeto JSON con los resultados de su Top 3 y porcentajes. No agregues texto después del JSON.
+Ejemplo de cierre: Según tu perfil, estas son tus mejores opciones... FINALIZADO {{"Licenciatura en Administracion": "85%", "Ingenieria de Software": "70%", "Ingenieria Civil": "60%"}}
+
+Aquí está la información clasificada de carreras para tu análisis interno: {json.dumps(carreras_db)}
 """
 
-# 5. Inicializar la memoria de Streamlit (Session State)
 if "mensajes" not in st.session_state:
-    st.session_state.mensajes = [{"role": "system", "content": system_prompt}]
-    # Agregamos un mensaje inicial falso del asistente para romper el hielo en la UI
-    st.session_state.mensajes.append({"role": "assistant", "content": "Hola. Soy tu agente vocacional. Para empezar a perfilarte, cuéntame: ¿qué te gusta hacer en tu tiempo libre?"})
+    st.session_state.mensajes = [
+        {"role": "system", "content": system_prompt},
+        {"role": "assistant", "content": f"Hola, soy tu guía. Para empezar, ¿qué materias te apasionan más?"}
+    ]
 
-# 6. Mostrar el historial de mensajes en la interfaz (ocultando el system_prompt)
 for mensaje in st.session_state.mensajes:
     if mensaje["role"] != "system":
         with st.chat_message(mensaje["role"]):
             st.markdown(mensaje["content"])
 
-# 7. Capturar entrada del usuario
-if prompt := st.chat_input("Escribe tu respuesta aquí..."):
-    # Mostrar el mensaje del usuario
+if prompt := st.chat_input("Escribe aquí..."):
+    st.session_state.mensajes.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
-    
-    # Guardar en memoria
-    st.session_state.mensajes.append({"role": "user", "content": prompt})
 
-    # Llamar a Groq
     with st.chat_message("assistant"):
-        with st.spinner("Analizando tu perfil..."):
-            chat_completion = client.chat.completions.create(
+        with st.spinner("Analizando..."):
+            completion = client.chat.completions.create(
                 messages=st.session_state.mensajes,
                 model="llama-3.3-70b-versatile",
                 temperature=0.2,
             )
-            respuesta = chat_completion.choices[0].message.content
-            st.markdown(respuesta)
+            respuesta = completion.choices[0].message.content
+            
+            # Lógica de intercepción
+            if "FINALIZADO" in respuesta:
+                try:
+                    # Extraer el JSON
+                    datos_json_str = respuesta.split("FINALIZADO")[1].strip()
+                    res_json = json.loads(datos_json_str)
+                    
+                    # Guardar en archivo local
+                    guardar_resultado(st.session_state.user_id, res_json)
+                    
+                    # Cambiar estado de la UI
+                    st.session_state.resultados_finales = res_json
+                    st.session_state.test_completado = True
+                    st.rerun() # Esto recarga la app y nos manda al ESTADO 3
+                except Exception as e:
+                    # Si el LLM formatea mal el JSON, mostramos la respuesta normal como control de fallos
+                    texto_visible = respuesta.replace("FINALIZADO", "")
+                    st.markdown(texto_visible)
+            else:
+                st.markdown(respuesta)
     
-    # Guardar la respuesta del asistente en memoria
-    st.session_state.mensajes.append({"role": "assistant", "content": respuesta})
+    # Solo guardamos el mensaje en el historial si no ha finalizado
+    if not st.session_state.test_completado:
+        st.session_state.mensajes.append({"role": "assistant", "content": respuesta})
